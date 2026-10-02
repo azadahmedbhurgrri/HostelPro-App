@@ -4,6 +4,9 @@ import 'dart:io';
 import 'dart:async';
 import 'package:panorama_viewer/panorama_viewer.dart';
 
+List<Map<String, dynamic>> savedHostelsList = [];
+Function(int)? globalSwitchTab;
+
 void main() {
   runApp(const StudentHostelApp());
 }
@@ -22,40 +25,6 @@ class StudentHostelApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       ),
       home: const SplashScreen(),
-    );
-  }
-}
-
-// ── 2. REUSABLE MOBILE FRAME ──
-class MobileFrame extends StatelessWidget {
-  final Widget child;
-  const MobileFrame({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 82, 80, 80),
-      body: Center(
-        child: Container(
-          height: 700,
-          width: 350,
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              width: 5,
-            ),
-            boxShadow: const [
-              BoxShadow(color: Colors.black87, blurRadius: 1, spreadRadius: 1),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(25),
-            child: SafeArea(child: child),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -82,15 +51,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Center(
+    return Scaffold(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               'assets/images/logo.jpg',
-              width: 150,
-              height: 150,
+              width: 250,
+              height: 250,
               errorBuilder: (context, error, stackTrace) =>
                   const Icon(Icons.apartment, size: 100, color: Colors.amber),
             ),
@@ -128,7 +97,7 @@ class _AuthNavigationWrapperState extends State<AuthNavigationWrapper> {
   }
 }
 
-// ── 5. LOGIN PAGE ──
+// ── 5. LOGIN SCREEN ──
 
 // Main Widget Class
 class LoginPage extends StatefulWidget {
@@ -158,122 +127,168 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 50),
-                Image.asset(
-                  'assets/images/logo.jpg',
-                  height: 100,
-                  alignment: Alignment.center,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.apartment,
-                    size: 80,
-                    color: Color.fromARGB(255, 17, 5, 75),
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 50),
+              Image.asset(
+                'assets/images/logo.jpg',
+                height: 100,
+                alignment: Alignment.center,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.apartment,
+                  size: 80,
+                  color: Color.fromARGB(255, 17, 5, 75),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  "Welcome Hostel Pro",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 17, 4, 75),
-                  ),
-                  textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Welcome Hostel Pro",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 17, 4, 75),
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  textAlign: TextAlign.right,
-                ),
-                const SizedBox(height: 20),
-                const TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_rounded),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _ispasswordObscure,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ForgotPasswordPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      "Forget Password",
-                      style: TextStyle(color: Color.fromARGB(255, 0, 140, 255)),
+                textAlign: TextAlign.center,
+              ),
+              // -----DIVIDER LINE-----
+              const SizedBox(height: 20),
+              Row(
+                children: const [
+                  Expanded(
+                    child: Divider(
+                      color: Color.fromARGB(255, 9, 5, 59),
+                      thickness: 3,
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      "WELCOME",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: Color.fromARGB(255, 9, 5, 59),
+                      thickness: 3,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+              const Text(
+                "Login",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 10),
-                ElevatedButton(
+                textAlign: TextAlign.right,
+              ),
+              const SizedBox(height: 10),
+              const TextField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email_rounded),
+                ),
+              ),
+              const SizedBox(height: 5),
+              TextField(
+                controller: _passwordController,
+                obscureText: _ispasswordObscure,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
                   onPressed: () {
-                    // AUTHENTICATION SUCCESS: GO TO MAIN DASHBOARD
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const MainNavigationWrapper(),
+                        builder: (context) => const ForgotPasswordPage(),
                       ),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 39, 5, 75),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                  child: const Text(
+                    "Forget Password",
+                    style: TextStyle(color: Colors.blueAccent),
                   ),
-                  child: const Text("Login", style: TextStyle(fontSize: 18)),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: widget.onRegisterTap,
-                      child: const Text(
-                        "Create New Account",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  // AUTHENTICATION SUCCESS: GO TO MAIN DASHBOARD
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MainNavigationWrapper(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 39, 5, 75),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text("Login", style: TextStyle(fontSize: 18)),
+              ),
+              //----DIVIDER LINE----
+              const SizedBox(height: 20),
+              Row(
+                children: const [
+                  Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      "OR",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
+                  ),
+                  Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account?"),
+                  const SizedBox(width: 5),
+                  GestureDetector(
+                    onTap: widget.onRegisterTap,
+                    child: const Text(
+                      "Create New Account",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
@@ -388,7 +403,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 10),
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -415,13 +430,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(icon, size: 36, color: Colors.grey),
+                      Icon(
+                        icon,
+                        size: 36,
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         "Tap to capture / upload",
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: const Color.fromARGB(255, 0, 0, 0),
                         ),
                       ),
                     ],
@@ -434,26 +453,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        appBar: AppBar(
-          title: const Text(
-            'HostelPro - Register',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              fontSize: 16,
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      appBar: AppBar(
+        title: const Text(
+          'Register New Account',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 19, 5, 75),
+        elevation: 4,
+      ),
+      body: Form(
+        key: _formKey,
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color.fromARGB(255, 19, 5, 75),
             ),
           ),
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 19, 5, 75),
-          elevation: 4,
-        ),
-        body: Form(
-          key: _formKey,
           child: Stepper(
-            type: StepperType.horizontal,
+            type: StepperType.vertical,
             currentStep: _currentStep,
             onStepContinue: () {
               if (_currentStep < 2) {
@@ -470,7 +494,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             steps: [
               // ---------------- STEP 1: PERSONAL INFO ----------------
               Step(
-                title: const Text("Personal"),
+                title: const Text("PERSONAL INFORMATION"),
                 isActive: _currentStep >= 0,
                 state: _currentStep > 0
                     ? StepState.complete
@@ -533,7 +557,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // ---------------- STEP 2: CNIC & CONTACTS ----------------
               Step(
-                title: const Text("Identity"),
+                title: const Text("IDENTITY"),
                 isActive: _currentStep >= 1,
                 state: _currentStep > 1
                     ? StepState.complete
@@ -613,7 +637,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               // ---------------- STEP 3: SECURITY & VERIFICATION ----------------
               Step(
-                title: const Text("Security"),
+                title: const Text("VERIFICATION"),
                 isActive: _currentStep >= 2,
                 state: StepState.editing,
                 content: Column(
@@ -789,47 +813,45 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              const Icon(
-                Icons.lock_reset_rounded,
-                size: 70,
-                color: Color.fromARGB(255, 19, 5, 75),
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                "Forgot Password?",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _inputController,
-                decoration: InputDecoration(
-                  labelText: 'Enter Email / Phone',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 40),
+            const Icon(
+              Icons.lock_reset_rounded,
+              size: 70,
+              color: Color.fromARGB(255, 19, 5, 75),
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              "Forgot Password?",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _inputController,
+              decoration: InputDecoration(
+                labelText: 'Enter Email / Phone',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 19, 5, 75),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 19, 5, 75),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Text("Send Reset Code"),
               ),
-            ],
-          ),
+              child: const Text("Send Reset Code"),
+            ),
+          ],
         ),
       ),
     );
@@ -849,58 +871,60 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   int _currentAddListingStep = 1;
 
   @override
+  void initState() {
+    super.initState();
+    globalSwitchTab = (index) {
+      setState(() {
+        _currentIndex = index;
+      });
+    };
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: [
-            const DashboardScreen(),
-            const Center(child: Text('Explore Screen')),
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: AddListingStepsPart2(
-                  step: _currentAddListingStep,
-                  onStepChange: (step) =>
-                      setState(() => _currentAddListingStep = step),
-                  onSubmit: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Listing Submitted!')),
-                    );
-                  },
-                ),
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          const DashboardScreen(),
+          const SavedListingsScreen(),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: AddListingStepsPart2(
+                step: _currentAddListingStep,
+                onStepChange: (step) =>
+                    setState(() => _currentAddListingStep = step),
+                onSubmit: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Listing Submitted!')),
+                  );
+                },
               ),
             ),
-            const HostelStudentsPortalWidget(hostelName: "INDUS BOYES HOSTEL"),
-            ProfileScreen(setScreen: (screen) {}),
-          ],
+          ),
+          const HostelStudentsPortalWidget(hostelName: "INDUS BOYES HOSTEL"),
+          ProfileScreen(setScreen: (screen) {}),
+        ],
+      ),
+      bottomNavigationBar: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(1),
+          topRight: Radius.circular(1),
         ),
-        bottomNavigationBar: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(1),
-            topRight: Radius.circular(1),
-          ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) => setState(() => _currentIndex = index),
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: const Color.fromARGB(255, 19, 5, 75),
-            unselectedItemColor: Colors.grey,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Explore',
-              ),
-              BottomNavigationBarItem(icon: Icon(Icons.add), label: 'ADD'),
-              BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Portal'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: const Color.fromARGB(255, 19, 5, 75),
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
+            BottomNavigationBarItem(icon: Icon(Icons.add), label: 'ADD'),
+            BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Portal'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
         ),
       ),
     );
@@ -935,6 +959,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  int notificationCount = 0;
+
+  void _onNotificationTap() {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Notification Opened!")));
+  }
+
   String selectedCat = "All";
   String searchQuery = "";
   String selectedCity = "All Pakistan";
@@ -993,6 +1025,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     },
   ];
+
+  Function(int)? globalSwitchTab;
 
   void _showCityPickerDialog() {
     showDialog(
@@ -1059,496 +1093,457 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     // Header Dashboard Options Welcome, Name, Pak, Search
 
-    return MobileFrame(
-      child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(17, 47, 17, 19),
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [B1, B1, B2],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                      bottomRight: Radius.circular(50),
-                    ),
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(17, 47, 17, 19),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 0, 0, 0),
+                      Color.fromARGB(255, 5, 8, 43),
+                      B2,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Welcome",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: 11.5,
-                                ),
-                              ),
-                              Text(
-                                "Azad Ahmed",
-                                style: TextStyle(
-                                  color: W,
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ],
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Notification Button
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications_none_rounded,
+                            size: 28,
+                            color: Colors.white,
                           ),
-                          // Cities Selector
-                          InkWell(
-                            onTap: _showCityPickerDialog,
+                          onPressed: _onNotificationTap,
+                        ),
+                        if (notificationCount > 0)
+                          Positioned(
+                            right: 8,
+                            top: 8,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
                               ),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(
-                                  0,
-                                  255,
-                                  255,
-                                  255,
-                                ).withValues(alpha: 0.12),
-                                border: Border.all(
-                                  color: const Color.fromARGB(
-                                    22,
-                                    255,
-                                    255,
-                                    255,
-                                  ).withValues(alpha: 0.22),
+                              constraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: Text(
+                                '$notificationCount',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "🇵🇰",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  Text(
-                                    selectedCity == "All Pakistan"
-                                        ? "All PK"
-                                        : selectedCity,
-                                    style: const TextStyle(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      color: W,
-                                    ),
-                                  ),
-                                  const Text(
-                                    "Change",
-                                    style: TextStyle(
-                                      fontSize: 8,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
+                                textAlign: TextAlign.right,
                               ),
                             ),
                           ),
-                        ],
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Welcome",
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 255, 255, 255),
+                                fontSize: 11.5,
+                              ),
+                            ),
+                            Text(
+                              "Azad Ahmed",
+                              style: TextStyle(
+                                color: W,
+                                fontSize: 19,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Cities Selector
+                        InkWell(
+                          onTap: _showCityPickerDialog,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 4,
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  "🇵🇰",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  selectedCity == "All Pakistan"
+                                      ? ""
+                                      : selectedCity,
+                                  style: const TextStyle(
+                                    fontSize: 3,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const Text(
+                                  "Change",
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Header Searching Box Option
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 1,
                       ),
-                      const SizedBox(height: 12),
-                      // Header Searching Box Option
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 1,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.18),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.18),
+                      ),
+                      child: TextField(
+                        onChanged: (val) => setState(() => searchQuery = val),
+                        style: const TextStyle(color: W, fontSize: 13),
+                        decoration: const InputDecoration(
+                          icon: Icon(
+                            Icons.search,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            size: 18,
                           ),
+                          hintText: "Search hostel, flat, room, city...",
+                          labelText: "Searching...",
+                          hintStyle: TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 9,
+                          ),
+                          border: InputBorder.none,
                         ),
-                        child: TextField(
-                          onChanged: (val) => setState(() => searchQuery = val),
-                          style: const TextStyle(color: W, fontSize: 13),
-                          decoration: const InputDecoration(
-                            icon: Icon(
-                              Icons.search,
-                              color: Color.fromARGB(179, 255, 255, 255),
-                              size: 18,
-                            ),
-                            hintText: "Search hostel, flat, room, city...",
-                            labelText: "Searching...",
-                            hintStyle: TextStyle(
-                              color: Color.fromARGB(242, 255, 255, 255),
-                              fontSize: 13,
-                            ),
-                            border: InputBorder.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Application Updates
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 7, 15, 0),
+                child: Container(
+                  padding: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7),
+                    border: Border.all(color: const Color(0xFFFCD34D)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Text("🔔", style: TextStyle(fontSize: 13)),
+                      SizedBox(width: 3),
+                      Expanded(
+                        child: Text(
+                          "Welcome Daily New Posties For Hostels, Flat Pooling, Room Sharing In All Over Pakistan Easy To Use For Users...!",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF92400E),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Browsing All Pakistan Option
-                Padding(
+              ),
+              // CHIPS CATEGARE Filtering option
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 15),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = categories[index];
+                    final isSel = selectedCat == cat;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: ChoiceChip(
+                        label: Text(cat),
+                        selected: isSel,
+                        selectedColor: B1,
+                        backgroundColor: W,
+                        labelStyle: TextStyle(
+                          color: isSel ? W : G5,
+                          fontSize: 11.5,
+                          fontWeight: isSel
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                        onSelected: (val) {
+                          setState(() => selectedCat = cat);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // LISTING OPTION
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 6,
+                ),
+                child: Text(
+                  "${filteredListings.length} LISTINGS",
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: G4,
+                  ),
+                ),
+              ),
+              // Dashboard sa hostel Listing
+              ...filteredListings.map((h) {
+                final kc = _getKindColor(h["kind"]);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 6,
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(75, 255, 255, 255),
-                      border: Border.all(color: B4),
-                      borderRadius: BorderRadius.circular(8),
+                      color: W,
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(color: G2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Row(
+                    child: Column(
                       children: [
-                        const Text("🇵🇰", style: TextStyle(fontSize: 20)),
-                        const SizedBox(width: 9),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Container(
+                          height: 115,
+                          decoration: BoxDecoration(
+                            color: kc.withValues(alpha: 0.1),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(13),
+                            ),
+                          ),
+                          child: Stack(
                             children: [
-                              Text(
-                                selectedCity == "All Pakistan"
-                                    ? "Browsing all Pakistan"
-                                    : "Showing listings in $selectedCity",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: B2,
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(13),
+                                  ),
+                                  child: Image.asset(
+                                    h["image"] ??
+                                        "assets/images/boyshostel.jpeg",
+                                    width: double.infinity,
+                                    height: 115,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              height: 50,
+                                              color: Colors.grey.shade300,
+                                              child: const Icon(
+                                                Icons.apartment,
+                                                size: 40,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                  ),
                                 ),
                               ),
-                              Text(
-                                selectedCity == "All Pakistan"
-                                    ? "Tap to filter by city"
-                                    : "Tap to change city",
-                                style: const TextStyle(
-                                  fontSize: 10.5,
-                                  color: G4,
+                              Positioned(
+                                top: 8,
+                                left: 8,
+                                child: _buildBadge(
+                                  _getKindLabel(h["kind"]),
+                                  kc,
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: _buildBadge(h["gender"], Colors.black54),
+                              ),
+                              Positioned(
+                                bottom: 8,
+                                left: 8,
+                                child: _buildBadge(
+                                  "${h["slots"]} slots",
+                                  h["slots"] < 4
+                                      ? GR
+                                      : const Color.fromARGB(255, 255, 0, 159),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 8,
+                                right: 8,
+                                child: _buildBadge(
+                                  "📍 ${h["city"]}",
+                                  Colors.black45,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const Text(
-                          "Change",
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            color: B1,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Application Updates
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 7, 15, 0),
-                  child: Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF3C7),
-                      border: Border.all(color: const Color(0xFFFCD34D)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Row(
-                      children: [
-                        Text("🔔", style: TextStyle(fontSize: 13)),
-                        SizedBox(width: 7),
-                        Expanded(
-                          child: Text(
-                            "Welcome Daily New Posties For Hostels, Flat Pooling, Room Sharing In All Over Pakistan Easy To Use For Users...!",
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF92400E),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // CHIPS CATEGARE Filtering option
-                SizedBox(
-                  height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      final cat = categories[index];
-                      final isSel = selectedCat == cat;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 5),
-                        child: ChoiceChip(
-                          label: Text(cat),
-                          selected: isSel,
-                          selectedColor: B1,
-                          backgroundColor: W,
-                          labelStyle: TextStyle(
-                            color: isSel ? W : G5,
-                            fontSize: 11.5,
-                            fontWeight: isSel
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                          onSelected: (val) {
-                            setState(() => selectedCat = cat);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                // LISTING OPTION
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 6,
-                  ),
-                  child: Text(
-                    "${filteredListings.length} listings",
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
-                      color: G4,
-                    ),
-                  ),
-                ),
-                // Dashboard sa hostel Listing
-                ...filteredListings.map((h) {
-                  final kc = _getKindColor(h["kind"]);
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 6,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: W,
-                        borderRadius: BorderRadius.circular(13),
-                        border: Border.all(color: G2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 115,
-                            decoration: BoxDecoration(
-                              color: kc.withValues(alpha: 0.1),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(13),
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(13),
-                                    ),
-                                    child: Image.asset(
-                                      h["image"] ??
-                                          "assets/images/boyshostel.jpeg",
-                                      width: double.infinity,
-                                      height: 115,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Container(
-                                                height: 50,
-                                                color: Colors.grey.shade300,
-                                                child: const Icon(
-                                                  Icons.apartment,
-                                                  size: 40,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: _buildBadge(
-                                    _getKindLabel(h["kind"]),
-                                    kc,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: _buildBadge(
-                                    h["gender"],
-                                    Colors.black54,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 8,
-                                  left: 8,
-                                  child: _buildBadge(
-                                    "${h["slots"]} slots",
-                                    h["slots"] < 4
-                                        ? GR
-                                        : const Color.fromARGB(
-                                            255,
-                                            255,
-                                            0,
-                                            179,
-                                          ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 8,
-                                  right: 8,
-                                  child: _buildBadge(
-                                    "📍 ${h["city"]}",
-                                    Colors.black45,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
 
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        h["name"],
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: T,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${h["addr"]}, ${h["city"]}",
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: G4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: G1,
+                                      border: Border.all(color: G2),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Column(
                                       children: [
                                         Text(
-                                          h["name"],
+                                          "★ ${h["rating"]}",
                                           style: const TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 11.5,
                                             fontWeight: FontWeight.bold,
                                             color: T,
                                           ),
                                         ),
                                         Text(
-                                          "${h["addr"]}, ${h["city"]}",
+                                          "${h["rev"]} rev",
                                           style: const TextStyle(
-                                            fontSize: 11,
-                                            color: G4,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: G1,
-                                        border: Border.all(color: G2),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "★ ${h["rating"]}",
-                                            style: const TextStyle(
-                                              fontSize: 11.5,
-                                              fontWeight: FontWeight.bold,
-                                              color: T,
-                                            ),
-                                          ),
-                                          Text(
-                                            "${h["rev"]} rev",
-                                            style: const TextStyle(
-                                              fontSize: 8.5,
-                                              color: G3,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          "From",
-                                          style: TextStyle(
-                                            fontSize: 9.5,
+                                            fontSize: 8.5,
                                             color: G3,
                                           ),
                                         ),
-                                        Text(
-                                          "PKR ${h["price"]}/mo",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: B1,
-                                          ),
-                                        ),
                                       ],
                                     ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
 
-                                    // Hostel View Button
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: B1,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "From",
+                                        style: TextStyle(
+                                          fontSize: 9.5,
+                                          color: G3,
                                         ),
                                       ),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                HostelDetailScreen(hostel: h),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text(
-                                        "View",
-                                        style: TextStyle(color: W),
+                                      Text(
+                                        "PKR ${h["price"]}/mo",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          color: B1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  // Hostel View Button
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: B1,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              HostelDetailScreen(hostel: h),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      "View",
+                                      style: TextStyle(color: W),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                }),
-              ],
-            ),
+                  ),
+                );
+              }),
+            ],
           ),
         ),
       ),
@@ -2460,26 +2455,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 80),
-          child: Column(
-            children: [
-              _buildHeader(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  children: [
-                    _buildAdmissionCard(),
-                    if (!isEditing) _buildPersonalInfoCard(),
-                    if (isEditing) _buildEditProfileCard(),
-                  ],
-                ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: Column(
+          children: [
+            _buildHeader(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                children: [
+                  _buildAdmissionCard(),
+                  if (!isEditing) _buildPersonalInfoCard(),
+                  if (isEditing) _buildEditProfileCard(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -2922,155 +2915,150 @@ class _HostelStudentsPortalWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
-        appBar: AppBar(
-          title: Text("${widget.hostelName} - Portal"),
-          backgroundColor: const Color.fromARGB(255, 19, 5, 75),
-          titleTextStyle: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            fontSize: 18,
-          ),
-          elevation: 0,
-          toolbarHeight: 100.0,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-          ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: Text("${widget.hostelName} - Portal"),
+        backgroundColor: const Color.fromARGB(255, 19, 5, 75),
+        titleTextStyle: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          fontSize: 18,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEBF2FF),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFF1447E6),
-                    width: 1.5,
+        elevation: 0,
+        toolbarHeight: 100.0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEBF2FF),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF1447E6), width: 1.5),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Registered Boarders",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Total: ${students.length} Residents",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color.fromARGB(255, 53, 69, 92),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Registered Boarders",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 0, 0, 0),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Total: ${students.length} Residents",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color.fromARGB(255, 53, 69, 92),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Icon(
-                      Icons.people_alt,
-                      color: Color(0xFF1447E6),
-                      size: 30,
-                    ),
-                  ],
-                ),
+                  const Icon(
+                    Icons.people_alt,
+                    color: Color(0xFF1447E6),
+                    size: 30,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: students.length,
-                  itemBuilder: (context, index) {
-                    final student = students[index];
-                    return Card(
-                      elevation: 2,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(14.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  student.fullName,
-                                  style: const TextStyle(
-                                    fontSize: 15,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: students.length,
+                itemBuilder: (context, index) {
+                  final student = students[index];
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                student.fullName,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromARGB(255, 5, 3, 3),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: student.userType == "Student"
+                                      ? Colors.blue.withValues(alpha: 0.15)
+                                      : Colors.orange.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  student.userType,
+                                  style: TextStyle(
+                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 5, 3, 3),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
                                     color: student.userType == "Student"
-                                        ? Colors.blue.withValues(alpha: 0.15)
-                                        : Colors.orange.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    student.userType,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: student.userType == "Student"
-                                          ? const Color(0xFF1447E6)
-                                          : Colors.orange[800],
-                                    ),
+                                        ? const Color(0xFF1447E6)
+                                        : Colors.orange[800],
                                   ),
                                 ),
-                              ],
-                            ),
-                            const Divider(height: 18),
-                            _buildDetailRow(
-                              Icons.domain,
-                              "Uni/Company:",
-                              student.department,
-                            ),
-                            const Divider(height: 18),
-                            _buildDetailRow(
-                              Icons.domain,
-                              "Dept/Role:",
-                              student.department,
-                            ),
-                            const SizedBox(height: 6),
-                            _buildDetailRow(
-                              Icons.meeting_room,
-                              "Room / Bed:",
-                              "Room ${student.roomNumber} (${student.bedNumber})",
-                            ),
-                            const SizedBox(height: 6),
-                            _buildDetailRow(
-                              Icons.phone_android,
-                              "Parent Phone:",
-                              student.parentPhone,
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 18),
+                          _buildDetailRow(
+                            Icons.domain,
+                            "Uni/Company:",
+                            student.department,
+                          ),
+                          const Divider(height: 18),
+                          _buildDetailRow(
+                            Icons.domain,
+                            "Dept/Role:",
+                            student.department,
+                          ),
+                          const SizedBox(height: 6),
+                          _buildDetailRow(
+                            Icons.meeting_room,
+                            "Room / Bed:",
+                            "Room ${student.roomNumber} (${student.bedNumber})",
+                          ),
+                          const SizedBox(height: 6),
+                          _buildDetailRow(
+                            Icons.phone_android,
+                            "Parent Phone:",
+                            student.parentPhone,
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -3103,617 +3091,699 @@ class _HostelStudentsPortalWidgetState
 }
 
 // HOSTEL DETAIL SCREEN
-class HostelDetailScreen extends StatelessWidget {
+class HostelDetailScreen extends StatefulWidget {
   final Map<String, dynamic> hostel;
 
   const HostelDetailScreen({super.key, required this.hostel});
 
   @override
+  State<HostelDetailScreen> createState() => _HostelDetailScreenState();
+}
+
+class _HostelDetailScreenState extends State<HostelDetailScreen> {
+  bool isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isSaved = savedHostelsList.any(
+      (item) => item['name'] == widget.hostel['name'],
+    );
+  }
+
+  void toggleFavorite() {
+    setState(() {
+      if (isSaved) {
+        savedHostelsList.removeWhere(
+          (item) => item['name'] == widget.hostel['name'],
+        );
+        isSaved = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Remove From Saved List!")),
+        );
+      } else {
+        savedHostelsList.add(widget.hostel);
+        isSaved = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "${widget.hostel['name'] ?? 'Hostel'} Saved Successfully!",
+            ),
+          ),
+        );
+        Navigator.pop(context);
+        if (globalSwitchTab != null) {
+          globalSwitchTab!(1);
+        }
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final hostel = widget.hostel;
     const primaryColor = Color.fromARGB(255, 19, 5, 75);
     const lightBg = Color(0xFFF8FAFC);
 
-    return MobileFrame(
-      child: Scaffold(
-        backgroundColor: lightBg,
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Column(
-                children: [
-                  // HEADER BANNER
-                  Container(
-                    width: double.infinity,
-                    color: primaryColor,
-                    padding: const EdgeInsets.fromLTRB(16, 40, 16, 5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white24,
-                            elevation: 0,
-                            minimumSize: const Size(60, 32),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            "Back",
-                            style: TextStyle(color: Colors.white),
-                          ),
+    return Scaffold(
+      backgroundColor: lightBg,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 100),
+            child: Column(
+              children: [
+                // HEADER BANNER
+                Container(
+                  width: double.infinity,
+                  color: primaryColor,
+                  padding: const EdgeInsets.fromLTRB(16, 40, 16, 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white24,
+                          elevation: 0,
+                          minimumSize: const Size(60, 32),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                         ),
-                        const SizedBox(height: 12),
-                        // ADD HOSTEL IMAGE
-                        GestureDetector(
-                          onTap: () {
-                            // 360 Degree Viewer Dialog Open Karein
-                            showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                backgroundColor: Colors.transparent,
-                                insetPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 24,
-                                ),
-                                child: Center(
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxHeight: 400,
-                                      maxWidth: 700,
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Stack(
-                                        children: [
-                                          PanoramaViewer(
-                                            child: Image.asset(
-                                              "assets/images/boyshostel.jpeg",
-                                            ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Back",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      // ADD HOSTEL IMAGE
+                      GestureDetector(
+                        onTap: () {
+                          // 360 Degree Viewer Dialog Open Karein
+                          showDialog(
+                            context: context,
+                            builder: (context) => Dialog(
+                              backgroundColor: Colors.transparent,
+                              insetPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 24,
+                              ),
+                              child: Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 400,
+                                    maxWidth: 700,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Stack(
+                                      children: [
+                                        PanoramaViewer(
+                                          child: Image.asset(
+                                            "assets/images/boyshostel.jpeg",
                                           ),
-                                          Positioned(
-                                            top: 10,
-                                            right: 10,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.black,
-                                              child: IconButton(
-                                                icon: const Icon(
-                                                  Icons.close,
-                                                  color: Colors.white,
-                                                  size: 30,
-                                                ),
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
+                                        ),
+                                        Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.black,
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 30,
                                               ),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                Image.asset(
-                                  "assets/images/boyshostel.jpeg",
-                                  height: 180,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Image.asset(
+                                "assets/images/boyshostel.jpeg",
+                                height: 180,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              // 360 Badge Overlay
+                              Container(
+                                margin: const EdgeInsets.all(8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
-                                // 360 Badge Overlay
-                                Container(
-                                  margin: const EdgeInsets.all(8),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.7),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.threed_rotation,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.7),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.threed_rotation,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      "Tap for 360°",
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        size: 16,
+                                        fontSize: 12,
                                       ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        "Tap for 360°",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        hostel["name"] ?? "INDUS BOYS HOSTEL",
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${hostel["addr"] ?? 'Gate 1, MUET Campus'}, ${hostel["city"] ?? 'Hyderabad'}",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          _buildBadge(
+                            "Hostel",
+                            const Color.fromARGB(75, 202, 199, 18),
+                          ),
+                          _buildBadge(
+                            "University",
+                            const Color.fromARGB(75, 202, 199, 18),
+                          ),
+                          _buildBadge(
+                            "Boys",
+                            const Color.fromARGB(75, 202, 199, 18),
+                          ),
+                          _buildBadge(
+                            "12 slots",
+                            const Color.fromARGB(75, 202, 199, 18),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ADD LOCATION BUTTON AND CONNECT GOOGLE API FOR LIVE LOCATION
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "${hostel['addr'] ?? 'Live Location'}",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.location_pin,
+                        color: Color.fromARGB(255, 65, 33, 243),
+                      ), // 🗺️ Map Icon Button
+                      onPressed: () {
+                        // Backend / Google Maps Integration baad me idhar laga gy
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Map Button Clicked")),
+                        );
+                      },
+                    ),
+                    // Saved Button In Hostel Detail Screen
+                    IconButton(
+                      icon: Icon(
+                        savedHostelsList.any(
+                              (element) => element['id'] == hostel['id'],
+                            )
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color:
+                            savedHostelsList.any(
+                              (element) => element['id'] == hostel['id'],
+                            )
+                            ? Colors.red
+                            : Colors.black,
+                      ),
+                      onPressed: () {
+                        bool exists = savedHostelsList.any(
+                          (element) => element['id'] == hostel['id'],
+                        );
+                        setState(() {
+                          if (exists) {
+                            savedHostelsList.removeWhere(
+                              (element) => element['id'] == hostel['id'],
+                            );
+                          } else {
+                            savedHostelsList.add(
+                              Map<String, dynamic>.from(hostel),
+                            );
+                          }
+                        });
+
+                        bool isNowSaved = savedHostelsList.any(
+                          (element) => element['id'] == hostel['id'],
+                        );
+
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isNowSaved
+                                  ? "Added To Saved List"
+                                  : "Removed From Saved List!",
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      // NEAR UNIVERSITIES
+                      _buildCard(
+                        title: "🎓 Near Universities",
+                        trailing: _buildBadge(
+                          "30 mint at bike",
+                          Colors.blue.shade100,
+                          textColor: primaryColor,
+                        ),
+                        child: Column(
+                          children: [
+                            _buildUniTile(
+                              "MUET Jamshoro",
+                              "18 • 30 min bike",
+                              "90",
+                              Colors.green,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildUniTile(
+                              "Sindh University",
+                              "20 km • 30 min by bike",
+                              "98",
+                              Colors.orange,
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                "Proximity Score:",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // NEARBY POINTS OF INTEREST
+                      _buildCard(
+                        title: "📍 Nearby Points of Interest",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSubCategory("🍔 Food", [
+                              "Cafeteria 50m",
+                              "Dhaba 100m",
+                              "Canteen 200m",
+                            ]),
+                            _buildSubCategory("🕌 Mosque", [
+                              "Campus Masjid 80m",
+                              "Jama Masjid 300m",
+                            ]),
+                            _buildSubCategory("🏥 Medical", [
+                              "UOS Clinic 200m",
+                              "Civil Hospital 3km",
+                            ]),
+                            _buildSubCategory("🚌 Transport", [
+                              "Bus Stop 100m",
+                              "Auto Stand 500m",
+                            ]),
+                            _buildSubCategory("🛍️ Shopping", [
+                              "Mini Market 150m",
+                              "General Store 300m",
+                            ]),
+                            _buildSubCategory("🏦 Bank", [
+                              "HBL ATM 200m",
+                              "UBL ATM 400m",
+                            ]),
+                          ],
+                        ),
+                      ),
+
+                      // TIME & SCHEDULE
+                      _buildCard(
+                        title: "🕒 Timings & Schedule",
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTimeBox("🌅 OPENS", "6:00 AM"),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildTimeBox("🌙 CLOSES", "11:00 PM"),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTimeBox(
+                                    "👥 VISITING",
+                                    "10 AM - 8 PM",
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildTimeBox(
+                                    "🔗 GATE CLOSE",
+                                    "11:00 PM",
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          hostel["name"] ?? "INDUS BOYS HOSTEL",
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "${hostel["addr"] ?? 'Gate 1, MUET Campus'}, ${hostel["city"] ?? 'Hyderabad'}",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            _buildBadge(
-                              "Hostel",
-                              const Color.fromARGB(75, 202, 199, 18),
-                            ),
-                            _buildBadge(
-                              "University",
-                              const Color.fromARGB(75, 202, 199, 18),
-                            ),
-                            _buildBadge(
-                              "Boys",
-                              const Color.fromARGB(75, 202, 199, 18),
-                            ),
-                            _buildBadge(
-                              "12 slots",
-                              const Color.fromARGB(75, 202, 199, 18),
+                            const SizedBox(height: 10),
+
+                            // ESTABLISHED SERVICE
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEFF6FF),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                "🏛️ Established in 2005 · 21+ years of service",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
 
-                  // ADD LOCATION BUTTON AND CONNECT GOOGLE API FOR LIVE LOCATION
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "${hostel['addr'] ?? 'Live Location'}",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                          ),
+                      // RATINGS
+                      _buildCard(
+                        title: "Ratings",
+                        child: Column(
+                          children: [
+                            _buildRatingProgress("Power", 0.90, "90%"),
+                            _buildRatingProgress("Hygiene", 0.78, "78%"),
+                            _buildRatingProgress("Management", 0.82, "82%"),
+                            _buildRatingProgress("Mess", 0.85, "85%"),
+                            _buildRatingProgress("Security", 0.88, "88%"),
+                          ],
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.location_pin,
-                          color: Color.fromARGB(255, 65, 33, 243),
-                        ), // 🗺️ Map Icon Button
-                        onPressed: () {
-                          // Backend / Google Maps Integration baad me idhar laga gy
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Map Button Clicked")),
-                          );
-                        },
+
+                      // ACCOMMODATION OPTION
+                      _buildCard(
+                        title: "Accommodation Options",
+                        child: Column(
+                          children: [
+                            _buildAccOption(
+                              "Single",
+                              "AC + Attached Bath",
+                              "PKR 6,500",
+                            ),
+                            const SizedBox(height: 8),
+                            _buildAccOption(
+                              "Double",
+                              "Fan + Shared Bath",
+                              "PKR 4,500",
+                            ),
+                            const SizedBox(height: 8),
+                            _buildAccOption(
+                              "Triple",
+                              "Fan + Common Bath",
+                              "PKR 3,200",
+                            ),
+                          ],
+                        ),
+                      ),
+                      // FACILITIES IN HOSTEL
+                      _buildCard(
+                        title: "Facilities",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [
+                                _buildBadge(
+                                  "📶 Wifi 50MB",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "📷 CCTV",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "📚 Study Hall",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "🍽️ Mess",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "🏍 Parking",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "💦 Water 24/7",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "👕 Laundry",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                                _buildBadge(
+                                  "🚿 Saperate Washroom",
+                                  const Color(0xFFEFF6FF),
+                                  textColor: primaryColor,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            // POWER BACKUP
+                            const Text(
+                              "Power Backup",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildBackupBox(
+                                    "🏭",
+                                    "Generator",
+                                    "Available",
+                                    const Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildBackupBox(
+                                    "🔋",
+                                    "UPS",
+                                    "Available",
+                                    const Color.fromARGB(255, 0, 0, 0),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildBackupBox(
+                                    "☀️",
+                                    "Solar",
+                                    "N/A",
+                                    Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // MESS MENU
+                      _buildCard(
+                        title: "Mess Menu",
+                        trailing: _buildBadge(
+                          "TODAY",
+                          const Color.fromARGB(255, 17, 3, 43),
+                          textColor: Colors.white,
+                        ),
+                        backgroundColor: const Color(0xFFEFF6FF),
+                        child: GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          childAspectRatio: 2.2,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          children: [
+                            _buildMenuItem("BREAKFAST", "Paratha, Egg, Tea"),
+                            _buildMenuItem("LUNCH", "Dal, Rice, Salad"),
+                            _buildMenuItem("DINNER", "Biryani / Karahi"),
+                            _buildMenuItem("SNACKS", "Samosa, Juice"),
+                          ],
+                        ),
+                      ),
+                      // REVIEWS USERS
+                      _buildCard(
+                        title: "Reviews",
+                        child: Column(
+                          children: [
+                            _buildReviewItem(
+                              "A",
+                              Colors.blue.shade800,
+                              "Shahzad Ali Laghari",
+                              "CS 3rd Year",
+                              "Power backup is flawless. Management responds quickly.",
+                            ),
+                            const SizedBox(height: 8),
+                            _buildReviewItem(
+                              "B",
+                              Colors.blue.shade700,
+                              "Basheer Ahmed Marri",
+                              "EE 2nd Year",
+                              "Best mess food in MUET. Highly recommended!",
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      children: [
-                        // NEAR UNIVERSITIES
-                        _buildCard(
-                          title: "🎓 Near Universities",
-                          trailing: _buildBadge(
-                            "30 mint at bike",
-                            Colors.blue.shade100,
-                            textColor: primaryColor,
-                          ),
-                          child: Column(
-                            children: [
-                              _buildUniTile(
-                                "MUET Jamshoro",
-                                "18 • 30 min bike",
-                                "90",
-                                Colors.green,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildUniTile(
-                                "Sindh University",
-                                "20 km • 30 min by bike",
-                                "98",
-                                Colors.orange,
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEFF6FF),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Text(
-                                  "Proximity Score:",
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                ),
+              ],
+            ),
+          ),
 
-                        // NEARBY POINTS OF INTEREST
-                        _buildCard(
-                          title: "📍 Nearby Points of Interest",
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildSubCategory("🍔 Food", [
-                                "Cafeteria 50m",
-                                "Dhaba 100m",
-                                "Canteen 200m",
-                              ]),
-                              _buildSubCategory("🕌 Mosque", [
-                                "Campus Masjid 80m",
-                                "Jama Masjid 300m",
-                              ]),
-                              _buildSubCategory("🏥 Medical", [
-                                "UOS Clinic 200m",
-                                "Civil Hospital 3km",
-                              ]),
-                              _buildSubCategory("🚌 Transport", [
-                                "Bus Stop 100m",
-                                "Auto Stand 500m",
-                              ]),
-                              _buildSubCategory("🛍️ Shopping", [
-                                "Mini Market 150m",
-                                "General Store 300m",
-                              ]),
-                              _buildSubCategory("🏦 Bank", [
-                                "HBL ATM 200m",
-                                "UBL ATM 400m",
-                              ]),
-                            ],
-                          ),
+          // 11. BOTTOM APPLY NOW BAR
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text(
+                        "Starting from",
+                        style: TextStyle(color: Colors.white70, fontSize: 11),
+                      ),
+                      Text(
+                        "PKR 4,500/mo",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-
-                        // TIME & SCHEDULE
-                        _buildCard(
-                          title: "🕒 Timings & Schedule",
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildTimeBox("🌅 OPENS", "6:00 AM"),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildTimeBox(
-                                      "🌙 CLOSES",
-                                      "11:00 PM",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildTimeBox(
-                                      "👥 VISITING",
-                                      "10 AM - 8 PM",
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildTimeBox(
-                                      "🔗 GATE CLOSE",
-                                      "11:00 PM",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-
-                              // ESTABLISHED SERVICE
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEFF6FF),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Text(
-                                  "🏛️ Established in 2005 · 21+ years of service",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Application Submitted Successfully!"),
                         ),
-
-                        // RATINGS
-                        _buildCard(
-                          title: "Ratings",
-                          child: Column(
-                            children: [
-                              _buildRatingProgress("Power", 0.90, "90%"),
-                              _buildRatingProgress("Hygiene", 0.78, "78%"),
-                              _buildRatingProgress("Management", 0.82, "82%"),
-                              _buildRatingProgress("Mess", 0.85, "85%"),
-                              _buildRatingProgress("Security", 0.88, "88%"),
-                            ],
-                          ),
-                        ),
-
-                        // ACCOMMODATION OPTION
-                        _buildCard(
-                          title: "Accommodation Options",
-                          child: Column(
-                            children: [
-                              _buildAccOption(
-                                "Single",
-                                "AC + Attached Bath",
-                                "PKR 6,500",
-                              ),
-                              const SizedBox(height: 8),
-                              _buildAccOption(
-                                "Double",
-                                "Fan + Shared Bath",
-                                "PKR 4,500",
-                              ),
-                              const SizedBox(height: 8),
-                              _buildAccOption(
-                                "Triple",
-                                "Fan + Common Bath",
-                                "PKR 3,200",
-                              ),
-                            ],
-                          ),
-                        ),
-                        // FACILITIES IN HOSTEL
-                        _buildCard(
-                          title: "Facilities",
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: 6,
-                                runSpacing: 6,
-                                children: [
-                                  _buildBadge(
-                                    "📶 Wifi 50MB",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "📷 CCTV",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "📚 Study Hall",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "🍽️ Mess",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "🏍 Parking",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "💦 Water 24/7",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "👕 Laundry",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                  _buildBadge(
-                                    "🚿 Saperate Washroom",
-                                    const Color(0xFFEFF6FF),
-                                    textColor: primaryColor,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // POWER BACKUP
-                              const Text(
-                                "Power Backup",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildBackupBox(
-                                      "🏭",
-                                      "Generator",
-                                      "Available",
-                                      const Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildBackupBox(
-                                      "🔋",
-                                      "UPS",
-                                      "Available",
-                                      const Color.fromARGB(255, 0, 0, 0),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _buildBackupBox(
-                                      "☀️",
-                                      "Solar",
-                                      "N/A",
-                                      Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // MESS MENU
-                        _buildCard(
-                          title: "Mess Menu",
-                          trailing: _buildBadge(
-                            "TODAY",
-                            const Color.fromARGB(255, 17, 3, 43),
-                            textColor: Colors.white,
-                          ),
-                          backgroundColor: const Color(0xFFEFF6FF),
-                          child: GridView.count(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            crossAxisCount: 2,
-                            childAspectRatio: 2.2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            children: [
-                              _buildMenuItem("BREAKFAST", "Paratha, Egg, Tea"),
-                              _buildMenuItem("LUNCH", "Dal, Rice, Salad"),
-                              _buildMenuItem("DINNER", "Biryani / Karahi"),
-                              _buildMenuItem("SNACKS", "Samosa, Juice"),
-                            ],
-                          ),
-                        ),
-                        // REVIEWS USERS
-                        _buildCard(
-                          title: "Reviews",
-                          child: Column(
-                            children: [
-                              _buildReviewItem(
-                                "A",
-                                Colors.blue.shade800,
-                                "Shahzad Ali Laghari",
-                                "CS 3rd Year",
-                                "Power backup is flawless. Management responds quickly.",
-                              ),
-                              const SizedBox(height: 8),
-                              _buildReviewItem(
-                                "B",
-                                Colors.blue.shade700,
-                                "Basheer Ahmed Marri",
-                                "EE 2nd Year",
-                                "Best mess food in MUET. Highly recommended!",
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      );
+                    },
+                    child: const Text(
+                      "Apply Now",
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
             ),
-
-            // 11. BOTTOM APPLY NOW BAR
-            Positioned(
-              left: 12,
-              right: 12,
-              bottom: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Text(
-                          "Starting from",
-                          style: TextStyle(color: Colors.white70, fontSize: 11),
-                        ),
-                        Text(
-                          "PKR 4,500/mo",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Application Submitted Successfully!",
-                            ),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Apply Now",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   } // END OF DEMO DATA IN HOSTELS PAGE
@@ -4128,6 +4198,102 @@ class HostelDetailScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── 10. SAVED LISTINGS SCREEN ──
+class SavedListingsScreen extends StatefulWidget {
+  const SavedListingsScreen({super.key});
+
+  @override
+  State<SavedListingsScreen> createState() => _SavedListingsScreenState();
+}
+
+class _SavedListingsScreenState extends State<SavedListingsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    if (savedHostelsList.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Saved Hostels"),
+          backgroundColor: const Color.fromARGB(255, 19, 5, 75),
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.favorite_border, size: 70, color: Colors.grey),
+              SizedBox(height: 10),
+              Text(
+                "No Saved Hostels Yet!",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Saved Hostels (${savedHostelsList.length})"),
+        backgroundColor: const Color.fromARGB(255, 19, 5, 75),
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: savedHostelsList.length,
+        itemBuilder: (context, index) {
+          final h = savedHostelsList[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(10),
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  h["image"] ?? "assets/images/boyshostel.jpeg",
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (ctx, err, stack) =>
+                      const Icon(Icons.apartment, size: 40),
+                ),
+              ),
+              title: Text(
+                h["name"] ?? "INDUS BOYS HOSTEL",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                "${h['addr'] ?? 'Qasimabad'}, ${h['city'] ?? 'Hyderabad'}\nPKR ${h['price'] ?? 12000}/mo",
+              ),
+              isThreeLine: true,
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  setState(() {
+                    savedHostelsList.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Removed from Saved")),
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
